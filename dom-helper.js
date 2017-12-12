@@ -99,7 +99,11 @@ function applyToElement(param, el) {
           }
           break;
         default:
-          el[p] = param[p];
+          if (p.startsWith('on') && 'function' === typeof param[p]) {
+            el[p] = param[p].bind(el);
+          } else {
+            el[p] = param[p];
+          }
       }
     }
   }
