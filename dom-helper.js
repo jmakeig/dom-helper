@@ -74,9 +74,17 @@ function applyToElement(param, el) {
     return el;
   }
 
-  if ('string' === typeof param) {
-    el.appendChild(document.createTextNode(param));
-    return el;
+  switch (typeof param) {
+    case 'string':
+    case 'number':
+    case 'boolean':
+      el.appendChild(document.createTextNode(String(param)));
+      return el;
+    case 'object':
+      if (null === param) {
+        el.appendChild(document.createTextNode(String(param)));
+        return el;
+      }
   }
 
   if (exists(param) && 'object' === typeof param) {
