@@ -6,11 +6,11 @@
  * @return {boolean}
  */
 function isIterable(item, ignoreStrings = true) {
-  if (!exists(item)) return false;
-  if ('function' === typeof item[Symbol.iterator]) {
-    return 'string' !== typeof item || !ignoreStrings;
-  }
-  return false;
+	if (!exists(item)) return false;
+	if ('function' === typeof item[Symbol.iterator]) {
+		return 'string' !== typeof item || !ignoreStrings;
+	}
+	return false;
 }
 /**
  * Whether something is not `undefined` or `null`
@@ -19,7 +19,7 @@ function isIterable(item, ignoreStrings = true) {
  * @return {boolean}
  */
 function exists(item) {
-  return !('undefined' === typeof item || null === item);
+	return !('undefined' === typeof item || null === item);
 }
 /**
  * Whether something doesn’t exist or is *not* an empty `string`
@@ -28,7 +28,7 @@ function exists(item) {
  * @return {boolean}
  */
 function isEmpty(item) {
-  return !exists(item) || '' === item;
+	return !exists(item) || '' === item;
 }
 /**
  * Guarantees an interable, even if passed a non-iterable,
@@ -38,9 +38,9 @@ function isEmpty(item) {
  * @return {Iterable|Array|null|undefined}
  */
 function toIterable(oneOrMany) {
-  if (!exists(oneOrMany)) return oneOrMany;
-  if (isIterable(oneOrMany)) return oneOrMany;
-  return [oneOrMany];
+	if (!exists(oneOrMany)) return oneOrMany;
+	if (isIterable(oneOrMany)) return oneOrMany;
+	return [oneOrMany];
 }
 
 /**
@@ -50,21 +50,21 @@ function toIterable(oneOrMany) {
  * @return {Node}
  */
 function createElement(name) {
-  if (name instanceof Node) return name;
-  if (isEmpty(name)) return document.createDocumentFragment();
-  return document.createElement(String(name));
+	if (name instanceof Node) return name;
+	if (isEmpty(name)) return document.createDocumentFragment();
+	return document.createElement(String(name));
 }
 
 function textNode(str) {
-  return document.createTextNode(
-    String(str)
-      .replace(/&/, '&amp;')
-      .replace(/</, '&lt;')
-  );
+	return document.createTextNode(
+		String(str)
+			.replace(/&/, '&amp;')
+			.replace(/</, '&lt;')
+	);
 }
 
 function isEventHandler(property) {
-  return /^on[^\s]+/.test(property);
+	return /^on[^\s]+/.test(property);
 }
 
 /**
@@ -74,60 +74,60 @@ function isEventHandler(property) {
  * @return {Node}
  */
 function applyToElement(param, el) {
-  if (isIterable(param)) {
-    for (const item of param) {
-      applyToElement(item, el);
-    }
-    return el;
-  }
+	if (isIterable(param)) {
+		for (const item of param) {
+			applyToElement(item, el);
+		}
+		return el;
+	}
 
-  if (param instanceof Node) {
-    el.appendChild(param);
-    return el;
-  }
+	if (param instanceof Node) {
+		el.appendChild(param);
+		return el;
+	}
 
-  switch (typeof param) {
-    case 'string':
-    case 'number':
-    case 'boolean':
-      el.appendChild(textNode(String(param)));
-      return el;
-    case 'object':
-      if (null === param) {
-        el.appendChild(textNode(String(param)));
-        return el;
-      }
-  }
+	switch (typeof param) {
+		case 'string':
+		case 'number':
+		case 'boolean':
+			el.appendChild(textNode(String(param)));
+			return el;
+		case 'object':
+			if (null === param) {
+				el.appendChild(textNode(String(param)));
+				return el;
+			}
+	}
 
-  if (exists(param) && 'object' === typeof param) {
-    for (const p of [
-      ...Object.getOwnPropertyNames(param),
-      ...Object.getOwnPropertySymbols(param)
-    ]) {
-      switch (p) {
-        case 'style':
-        case 'dataset':
-          for (let item in param[p]) {
-            if (exists(item)) el[p][item] = param[p][item];
-          }
-          break;
-        case 'class':
-        case 'className':
-        case 'classList':
-          for (const cls of toIterable(param[p])) {
-            if (exists(cls)) el.classList.add(cls);
-          }
-          break;
-        default:
-          if (isEventHandler(p)) {
-            console.log(`Event handler: ${p}, ${typeof param[p]}`);
-          } else {
-            el[p] = param[p];
-          }
-      }
-    }
-  }
-  return el;
+	if (exists(param) && 'object' === typeof param) {
+		for (const p of [
+			...Object.getOwnPropertyNames(param),
+			...Object.getOwnPropertySymbols(param)
+		]) {
+			switch (p) {
+				case 'style':
+				case 'dataset':
+					for (let item in param[p]) {
+						if (exists(item)) el[p][item] = param[p][item];
+					}
+					break;
+				case 'class':
+				case 'className':
+				case 'classList':
+					for (const cls of toIterable(param[p])) {
+						if (exists(cls)) el.classList.add(cls);
+					}
+					break;
+				default:
+					if (isEventHandler(p)) {
+						console.log(`Event handler: ${p}, ${typeof param[p]}`);
+					} else {
+						el[p] = param[p];
+					}
+			}
+		}
+	}
+	return el;
 }
 
 /**
@@ -137,11 +137,11 @@ function applyToElement(param, el) {
  * @return {Node}
  */
 export function element(name, ...rest) {
-  const el = createElement(name);
-  for (const param of rest) {
-    applyToElement(param, el);
-  }
-  return el;
+	const el = createElement(name);
+	for (const param of rest) {
+		applyToElement(param, el);
+	}
+	return el;
 }
 
 export const toFragment = (...rest) => element(null, ...rest);
@@ -185,7 +185,7 @@ export const input = (...rest) => element('input', { type: 'text' }, ...rest);
 export const button = (...rest) => element('button', ...rest);
 export const textarea = (...rest) => element('textarea', ...rest);
 export const checkbox = (...rest) =>
-  element('input', { type: 'checkbox' }, ...rest);
+	element('input', { type: 'checkbox' }, ...rest);
 export const radio = (...rest) => element('input', { type: 'radio' }, ...rest);
 export const select = (...rest) => element('select', ...rest);
 export const option = (...rest) => element('option', ...rest);
@@ -204,21 +204,21 @@ export const hr = (...rest) => element('hr', ...rest);
  * @returns {Node}  - The new parent wrapper
  */
 function replaceChildren(oldNode, newChild) {
-  if (!oldNode) return;
-  const tmpParent = oldNode.cloneNode();
-  if (newChild) {
-    if (newChild instanceof Node) {
-      tmpParent.appendChild(newChild);
-    } else {
-      Array.prototype.forEach.call(newChild, child =>
-        tmpParent.appendChild(child)
-      );
-    }
-  }
-  oldNode.parentNode.replaceChild(tmpParent, oldNode);
-  return tmpParent;
+	if (!oldNode) return;
+	const tmpParent = oldNode.cloneNode();
+	if (newChild) {
+		if (newChild instanceof Node) {
+			tmpParent.appendChild(newChild);
+		} else {
+			Array.prototype.forEach.call(newChild, child =>
+				tmpParent.appendChild(child)
+			);
+		}
+	}
+	oldNode.parentNode.replaceChild(tmpParent, oldNode);
+	return tmpParent;
 }
 
 export function renderInto(parent, ...children) {
-  return replaceChildren(parent);
+	return replaceChildren(parent);
 }
