@@ -55,6 +55,18 @@ function createElement(name) {
   return document.createElement(String(name));
 }
 
+function textNode(str) {
+  return document.createTextNode(
+    String(str)
+      .replace(/&/, '&amp;')
+      .replace(/</, '&lt;')
+  );
+}
+
+function isEventHandler(property) {
+  return /^on[^\s]+/.test(property);
+}
+
 /**
  *
  * @param {Iterable|Node|string|Object} param
@@ -78,11 +90,11 @@ function applyToElement(param, el) {
     case 'string':
     case 'number':
     case 'boolean':
-      el.appendChild(document.createTextNode(String(param)));
+      el.appendChild(textNode(String(param)));
       return el;
     case 'object':
       if (null === param) {
-        el.appendChild(document.createTextNode(String(param)));
+        el.appendChild(textNode(String(param)));
         return el;
       }
   }
@@ -90,7 +102,7 @@ function applyToElement(param, el) {
   if (exists(param) && 'object' === typeof param) {
     for (const p of [
       ...Object.getOwnPropertyNames(param),
-      ...Object.getOwnPropertySymbols(param),
+      ...Object.getOwnPropertySymbols(param)
     ]) {
       switch (p) {
         case 'style':
@@ -107,7 +119,11 @@ function applyToElement(param, el) {
           }
           break;
         default:
-          el[p] = param[p];
+          if (isEventHandler(p)) {
+            console.log(`Event handler: ${p}, ${typeof param[p]}`);
+          } else {
+            el[p] = param[p];
+          }
       }
     }
   }
@@ -130,6 +146,7 @@ export function element(name, ...rest) {
 
 export const toFragment = (...rest) => element(null, ...rest);
 export const empty = () => toFragment();
+export const text = textNode;
 
 export const header = (...rest) => element('header', ...rest);
 export const nav = (...rest) => element('nav', ...rest);
@@ -166,7 +183,6 @@ export const mark = (...rest) => element('mark', ...rest);
 
 export const input = (...rest) => element('input', { type: 'text' }, ...rest);
 export const button = (...rest) => element('button', ...rest);
-export const text = input;
 export const textarea = (...rest) => element('textarea', ...rest);
 export const checkbox = (...rest) =>
   element('input', { type: 'checkbox' }, ...rest);
@@ -187,7 +203,7 @@ export const hr = (...rest) => element('hr', ...rest);
  * @param {Node|DocumentFragment|NodeList|Array<Node>} newChild
  * @returns {Node}  - The new parent wrapper
  */
-export function replaceChildren(oldNode, newChild) {
+function replaceChildren(oldNode, newChild) {
   if (!oldNode) return;
   const tmpParent = oldNode.cloneNode();
   if (newChild) {
@@ -201,4 +217,8 @@ export function replaceChildren(oldNode, newChild) {
   }
   oldNode.parentNode.replaceChild(tmpParent, oldNode);
   return tmpParent;
+}
+
+export function renderInto(parent, ...children) {
+  return replaceChildren(parent);
 }
