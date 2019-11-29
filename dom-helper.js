@@ -203,10 +203,10 @@ export const hr = (...rest) => element("hr", ...rest);
  * @param {Node|DocumentFragment|NodeList|Array<Node>} newChild
  * @returns {Node}  - The new parent wrapper
  */
-function replaceChildren(oldNode, newChild) {
-	if (!oldNode) return;
-	const tmpParent = oldNode.cloneNode();
-	if (newChild) {
+export function replaceChildren(parent, ...children) {
+	if (!parent) return;
+	const tmpParent = parent.cloneNode();
+	for (const newChild of children) {
 		if (newChild instanceof Node) {
 			tmpParent.appendChild(newChild);
 		} else {
@@ -215,10 +215,6 @@ function replaceChildren(oldNode, newChild) {
 			);
 		}
 	}
-	oldNode.parentNode.replaceChild(tmpParent, oldNode);
+	parent.parentNode.replaceChild(tmpParent, parent);
 	return tmpParent;
-}
-
-export function renderInto(parent, ...children) {
-	return replaceChildren(parent);
 }
