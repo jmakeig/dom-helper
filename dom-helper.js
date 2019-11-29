@@ -64,6 +64,7 @@ function textNode(str) {
 }
 
 function isEventHandler(property) {
+	if ("string" !== typeof property) return false;
 	return /^on[^\s]+/.test(property);
 }
 
